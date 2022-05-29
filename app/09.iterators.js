@@ -8,11 +8,42 @@ console.log('Topic: Iterators');
 //     which takes an objects and returns iterable object.
 //     Iterable object allows you to get key/value pairs.
 //     Display in a console all colors from the object colors.
-// const colors = {
-//   green: '#0e0',
-//   orange: '#f50',
-//   pink: '#e07'
-// };
+
+export function keyValueIterable(target) {
+    if (typeof target[Symbol.iterator] === 'function') {
+        console.log('it is iterable object!');
+        return;
+    }
+
+
+    const keys = Object.keys(target);
+
+    Object.defineProperty(target, Symbol.iterator, {
+        value: function() {
+            return {
+                next() {
+                    const done = keys.length === 0;
+                    const key =  keys.shift();
+                    return { value: [key, target[key]], done };
+                }
+            };
+
+        },
+        writable: false,
+        enumerable: false,
+    });
+
+    console.log(target);
+
+    return target;
+
+}
+
+const colors = {
+  green: '#0e0',
+  orange: '#f50',
+  pink: '#e07'
+};
 
 // const itColors = keyValueIterable(colors);
 // for (const [, color] of itColors) {
@@ -28,15 +59,55 @@ console.log('Topic: Iterators');
 //     The boolean flag indicates whether a user is an administrator of the group.
 //     Сreatereate an iterator that returns only the administrators' names.
 
-// const users = {
-//   anna: false,
-//   boris: true, // admin
-//   christina: false,
-//   dave: false,
-//   elena: false,
-//   felix: true,  // admin
-// };
-// [...users].forEach(name => console.log(name)); // boris, felix 
+const users = {
+  anna: false,
+  boris: true, // admin
+  christina: false,
+  dave: false,
+  elena: false,
+  felix: true,  // admin
+};
+
+function userInAGroupIterator(group) {
+    // const adminNames = Object.keys(group).filter(key => group[key]);
+    const keys = Object.keys(group);
+
+//     group[Symbol.iterator] = function() {
+//         return {
+//             next() {
+//                 const done = adminNames.length === 0;
+//                 let name = adminNames.shift();
+//
+//                 return { value: name, done };
+//             }
+//         };
+//     }
+//     return group;
+
+    group[Symbol.iterator] = function() {
+        return {
+            next() {
+                const done = keys.length === 0; let key;
+
+                function checkUser() {
+                    key = keys.shift();
+
+                    if (group[key] === false) {
+                       checkUser();
+                    }
+                }
+                checkUser();
+
+                return { value: key, done };
+            }
+        };
+    }
+    return group;
+}
+
+// userInAGroupIterator(users);
+
+// [...users].forEach(name => console.log(name)); // boris, felix
 
 
 // Task 3
@@ -45,13 +116,29 @@ console.log('Topic: Iterators');
 // EN: Create a function take(sequence, amount), which returns a specified amount of numbers
 //     from iterable object random
 
-// const random = {
-//   [Symbol.iterator]: () => ({
-//     next: () => ({
-//       value: Math.random()
-//     })
-//   })
-// };
+const random = {
+  [Symbol.iterator]: () => ({
+    next: () => ({
+      value: Math.random()
+    })
+  })
+};
+
+function take(sequence, amount) {
+    let count = 0;
+    return {
+        [Symbol.iterator]: () => ({
+            next: () => {
+                const iterator = sequence[Symbol.iterator]();
+
+                if (amount-- < 1) {
+                    return { value: undefined, done: true };
+                }
+               return iterator.next();
+            }
+      })
+    }
+}
 
 // const a = [...take(random, 3)];
 // console.log(a);
@@ -62,6 +149,21 @@ console.log('Topic: Iterators');
 //     Реализовать метод return для остановки итератора с помощью for-of + break
 // EN: Create iterable iterator, which produces Fibonacci numbers
 //     Implement method return, which allows you to stop iterator using for-of + break
+
+const Fib = {
+    prev: [0, 1],
+    [Symbol.iterator]: function() { return this },
+
+    next() {
+        const value = this.prev[1] + this.prev[0];
+        this.prev = [this.prev[1], value];
+        return { value, done: false };
+    },
+    return(v) {
+        return { value: v, done: true };
+    }
+};
+
 
 // for (let v of Fib) {
 //   console.log(v);
@@ -77,3 +179,21 @@ console.log('Topic: Iterators');
 
 // console.log([...-5]);
 // console.log([...5]);
+
+Number.prototype[Symbol.iterator] = function() {
+    let start = 0;
+
+    return {
+        next: () => {
+            if (this > 0 && start <= this) {
+                return { value: start++, done: false };
+            } else if (this < 0 && start >= this) {
+                return { value: start--, done: false };
+            }
+            return { value: undefined, done: true };
+        }
+    };
+}
+
+// const v = [...3];
+// console.log(v);

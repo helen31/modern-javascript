@@ -4,6 +4,18 @@ console.log('Topic: Sync-Generators');
 // RU: Напишите функцию-генератор generateSequence, которая генерирует числа в диапазоне от start до end.
 // EN: Create function-generator generateSequence, which generates and returns numbers from start to end.
 
+function* generateSequence(start, end) {
+    while (start <= end) {
+        yield start++;
+    }
+}
+
+// const itGenerateSequence = generateSequence(2, 100);
+
+// for(const v of itGenerateSequence) {
+//     console.log('value', v);
+// }
+
 
 // Task 2. Long Sequences
 // RU: Создать массив из чисел от 1 до 1000. 
@@ -15,9 +27,57 @@ console.log('Topic: Sync-Generators');
 //     Result [1, 1], [1, 2], ..., [2, 1], [2, 2], ..., [1000, 1000]
 
 
+
+// const array = Array.from(Array(10).keys());
+//
+// function* generateCombinations() {
+//     const result = array.reduce((acc, v, i) => {
+//             // const res = acc.concat(array.slice(i+1).map( el => [v, el]));
+//             const res = acc.concat(array.map( el => [v, el]));
+//             return res;
+//         },
+//     []);
+//
+//     return yield* result;
+// }
+// const it1 = generateCombinations();
+
+// for(const v of it1) {
+//     console.log('value', v);
+// }
+
+// function* generateSequencePair() {
+//     for (let i = 0; i < array.length; i++) {
+//         for (let j = 0; j < array.length; j++) {
+//             yield [array[i], array[j]];
+//         }
+//     }
+// }
+// const it2 = generateSequencePair();
+// for(const v of it2) {
+//     console.log('value', v);
+// }
+
 // Task 3. 
 // RU: Реализуйте функцию генерации чисел Фибоначчи до бесконечности
 // EN: Implement the infinite function-generator of generating Fibonacci numbers
+
+// function* generateFib() {
+//     let prev = [0, 1];
+//     while (true) {
+//         let value = prev[1] + prev[0];
+//         prev = [prev[1], value];
+//         yield value;
+//     }
+// }
+//
+// const it = generateFib();
+//
+// console.log(it.next().value);
+// console.log(it.next().value);
+// console.log(it.next().value);
+// console.log(it.next().value);
+
 
 
 // Task 4. yield* 
@@ -30,6 +90,20 @@ console.log('Topic: Sync-Generators');
 //     Use the function-generator generateSequence implemented above, 
 //     String.fromCharCode (code), and a range of numbers from 48 to 57,
 //     65 to 90 and 97 to 122
+
+// function* outerGenerator() {
+//     yield* generateSequence(48, 57);
+//     yield* generateSequence(97, 122);
+//     yield* generateSequence(65, 90);
+// }
+//
+// const it = outerGenerator();
+// let s = '';
+//
+// for (let v of it) {
+//     s+= String.fromCharCode(v);
+// }
+// console.log(s);
 
 
 // Task 5. Sync Piping
